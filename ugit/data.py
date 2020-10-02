@@ -1,5 +1,6 @@
 import hashlib
 import os
+from pathlib import Path
 
 GIT_DIR = '.ugit'
 
@@ -12,14 +13,12 @@ def init():
 def hash_object(data, type_='blob'):
   obj = type_.encode() + b'\x00' + data
   oid = hashlib.sha1(obj).hexdigest()
-  with open(f'{GIT_DIR}/objects/{oid}', 'wb') as out:
-    out.write(obj)
+  Path(f'{GIT_DIR}/objects/{oid}').write_bytes(obj)
   return oid
 
 
 def get_object(oid, expected='blob'):
-  with open(f'{GIT_DIR}/objects/{oid}', 'rb') as f:
-    obj = f.read()
+  obj = Path(f'{GIT_DIR}/objects/{oid}').read_bytes()
 
   type_, _, content = obj.partition(b'\x00')
   type_ = type_.decode()

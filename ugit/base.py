@@ -9,8 +9,7 @@ def write_tree(directory='.'):
       continue
     if entry.is_file() and not entry.is_symlink():
       type_ = 'blob'
-      with open(entry, 'rb') as f:
-        oid = data.hash_object(f.read())
+      oid = data.hash_object(entry.read_bytes())
     elif entry.is_dir() and not entry.is_symlink():
       type_ = 'tree'
       oid = write_tree(entry)
@@ -63,9 +62,17 @@ def _empty_current_directory():
 def read_tree(tree_oid):
   _empty_current_directory()
   for path, oid in get_tree(tree_oid, base_path='./').items():
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'wb') as f:
-      f.write(data.get_object(oid))
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data.get_object(oid))
+
+
+def commit(message):
+  commit = f'tree {write_tree()}\n'
+  commit += '\n'
+  commit += f'{message}\n'
+
+  return data.hash_object(commit.encode(), 'commit')
 
 
 def is_ignored(path):
