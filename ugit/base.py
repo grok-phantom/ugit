@@ -118,6 +118,8 @@ def get_commit(oid):
 
 
 def get_oid(name):
+  if name == '@':
+    name = 'HEAD'
   # Name is ref
   refs_to_try = [
       f'{name}',
