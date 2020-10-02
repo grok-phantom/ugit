@@ -117,6 +117,21 @@ def get_commit(oid):
   return Commit(tree=tree, parent=parent, message=message)
 
 
+def iter_commit_and_parents(oids):
+  oids = set(oids)
+  visited = set()
+
+  while oids:
+    oid = oids.pop()
+    if not oid or oid in visited:
+      continue
+    visited.add(oid)
+    yield oid
+
+    commit = get_commit(oid)
+    oids.add(commit.parent)
+
+
 def get_oid(name):
   if name == '@':
     name = 'HEAD'
