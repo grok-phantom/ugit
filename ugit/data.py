@@ -11,7 +11,9 @@ def init():
 
 
 def update_ref(ref, oid):
-  Path(f'{GIT_DIR}/{ref}').write_text(oid)
+  path = Path(f'{GIT_DIR}/{ref}')
+  path.parent.mkdir(parents=True, exist_ok=True)
+  path.write_text(oid)
 
 
 def get_ref(ref):
