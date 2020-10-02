@@ -10,12 +10,12 @@ def init():
   os.makedirs(f'{GIT_DIR}/objects')
 
 
-def set_HEAD(oid):
-  Path(f'{GIT_DIR}/HEAD').write_text(oid)
+def update_ref(ref, oid):
+  Path(f'{GIT_DIR}/{ref}').write_text(oid)
 
 
-def get_HEAD():
-  path = Path(f'{GIT_DIR}/HEAD')
+def get_ref(ref):
+  path = Path(f'{GIT_DIR}/{ref}')
   if path.is_file():
     return path.read_text().strip()
 
