@@ -22,6 +22,15 @@ def get_ref(ref):
     return path.read_text().strip()
 
 
+def iter_refs():
+  refs = ['HEAD']
+  path = Path(f'{GIT_DIR}/refs/tags')
+  refs.extend([x.relative_to(GIT_DIR) for x in path.iterdir()])
+
+  for refname in refs:
+    yield refname, get_ref(refname)
+
+
 def hash_object(data, type_='blob'):
   obj = type_.encode() + b'\x00' + data
   oid = hashlib.sha1(obj).hexdigest()
