@@ -1,3 +1,7 @@
+import itertools
+import operator
+
+from collections import namedtuple
 from pathlib import Path
 from . import data
 
@@ -80,6 +84,26 @@ def commit(message):
   oid = data.hash_object(commit.encode(), 'commit')
   data.set_HEAD(oid)
   return oid
+
+
+Commit = namedtuple('Commit', ['tree', 'parent', 'message'])
+
+
+def get_commit(oid):
+  parent = None
+
+  commit = data.get_object(oid, 'commit').decode()
+  lines = iter(commit.splitlines())
+  for line in itertools.takewhile(operator.truth, lines):
+    key, value = line.split(' ', 1)
+    if key == 'tree':
+      tree = value
+    elif key == 'parent':
+      parent = value
+    else:
+      assert False, f'Unknown filed {key}'
+  message = '\n'.join(lines)
+  return Commit(tree=tree, parent=parent, message=message)
 
 
 def is_ignored(path):

@@ -11,13 +11,13 @@ def init():
 
 
 def set_HEAD(oid):
-  Path(f'{GIT_DIR}/HEAD').write_bytes(oid)
+  Path(f'{GIT_DIR}/HEAD').write_text(oid)
 
 
 def get_HEAD():
   path = Path(f'{GIT_DIR}/HEAD')
   if path.is_file():
-    return path.read_bytes().strip()
+    return path.read_text().strip()
 
 
 def hash_object(data, type_='blob'):
