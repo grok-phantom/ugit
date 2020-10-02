@@ -46,7 +46,22 @@ def get_tree(oid, base_path=''):
   return result
 
 
+def _empty_current_directory():
+  paths = list(Path('.').glob('**/*'))[::-1]
+  for path in paths:
+    if is_ignored(path):
+      continue
+    if path.is_file():
+      path.unlink()
+    else:
+      try:
+        path.rmdir()
+      except (FileNotFoundError, OSError):
+        pass
+
+
 def read_tree(tree_oid):
+  _empty_current_directory()
   for path, oid in get_tree(tree_oid, base_path='./').items():
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'wb') as f:
