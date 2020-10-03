@@ -15,11 +15,17 @@ RefValue = namedtuple('RefValue', ['symbolic', 'value'])
 
 
 def update_ref(ref, value, deref=True):
-  assert not value.symbolic
   ref = _get_ref_internal(ref, deref)[0]
+
+  assert value.value
+  if value.symbolic:
+    value = f'ref: {value.value}'
+  else:
+    value = value.value
+
   path = Path(f'{GIT_DIR}/{ref}')
   path.parent.mkdir(parents=True, exist_ok=True)
-  path.write_text(value.value)
+  path.write_text(value)
 
 
 def get_ref(ref, deref=True):
