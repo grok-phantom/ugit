@@ -40,7 +40,7 @@ def _get_ref_internal(ref, deref):
 
   symbolic = bool(value) and value.startswith('ref:')
   if symbolic:
-    value = get_ref(value.split(':', 1)[1].strip())
+    value = value.split(':', 1)[1].strip()
     if deref:
       return _get_ref_internal(value, deref=True)
 
