@@ -47,12 +47,14 @@ def _get_ref_internal(ref, deref):
   return ref, RefValue(symbolic=symbolic, value=value)
 
 
-def iter_refs(deref=True):
+def iter_refs(prefix='', deref=True):
   refs = ['HEAD']
   path = Path(f'{GIT_DIR}/refs/tags')
   refs.extend([x.relative_to(GIT_DIR) for x in path.iterdir()])
 
   for refname in refs:
+    if not str(refname).startswith(prefix):
+      continue
     yield refname, get_ref(refname, deref=deref)
 
 
