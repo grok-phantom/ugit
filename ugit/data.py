@@ -14,19 +14,19 @@ def init():
 RefValue = namedtuple('RefValue', ['symbolic', 'value'])
 
 
-def update_ref(ref, value):
+def update_ref(ref, value, deref=True):
   assert not value.symbolic
-  ref = _get_ref_internal(ref)[0]
+  ref = _get_ref_internal(ref, deref)[0]
   path = Path(f'{GIT_DIR}/{ref}')
   path.parent.mkdir(parents=True, exist_ok=True)
   path.write_text(value.value)
 
 
-def get_ref(ref):
-  return _get_ref_internal(ref)[1]
+def get_ref(ref, deref=True):
+  return _get_ref_internal(ref, deref)[1]
 
 
-def _get_ref_internal(ref):
+def _get_ref_internal(ref, deref):
   path = Path(f'{GIT_DIR}/{ref}')
   value = None
   if path.is_file():
@@ -35,18 +35,19 @@ def _get_ref_internal(ref):
   symbolic = bool(value) and value.startswith('ref:')
   if symbolic:
     value = get_ref(value.split(':', 1)[1].strip())
-    return _get_ref_internal(value)
+    if deref:
+      return _get_ref_internal(value, deref=True)
 
   return ref, RefValue(symbolic=symbolic, value=value)
 
 
-def iter_refs():
+def iter_refs(deref=True):
   refs = ['HEAD']
   path = Path(f'{GIT_DIR}/refs/tags')
   refs.extend([x.relative_to(GIT_DIR) for x in path.iterdir()])
 
   for refname in refs:
-    yield refname, get_ref(refname)
+    yield refname, get_ref(refname, deref=deref)
 
 
 def hash_object(data, type_='blob'):

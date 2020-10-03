@@ -149,7 +149,7 @@ def get_oid(name):
       f'refs/heads/{name}'
   ]
   for ref in refs_to_try:
-    res = data.get_ref(ref).value
+    res = data.get_ref(ref, deref=False).value
     if res:
       return res
 
