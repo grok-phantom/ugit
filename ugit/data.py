@@ -18,8 +18,14 @@ def update_ref(ref, oid):
 
 def get_ref(ref):
   path = Path(f'{GIT_DIR}/{ref}')
+  value = None
   if path.is_file():
-    return path.read_text().strip()
+    value = path.read_text().strip()
+
+  if value and value.startswith('ref:'):
+    return get_ref(value.split(':', 1)[1].strip())
+
+  return value
 
 
 def iter_refs():
