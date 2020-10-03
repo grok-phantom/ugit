@@ -1,6 +1,7 @@
 import hashlib
 import os
 from pathlib import Path
+from collections import namedtuple
 
 GIT_DIR = '.ugit'
 
@@ -10,10 +11,14 @@ def init():
   os.makedirs(f'{GIT_DIR}/objects')
 
 
-def update_ref(ref, oid):
+RefValue = namedtuple('RefValue', ['symbolic', 'value'])
+
+
+def update_ref(ref, value):
+  assert not value.symbolic
   path = Path(f'{GIT_DIR}/{ref}')
   path.parent.mkdir(parents=True, exist_ok=True)
-  path.write_text(oid)
+  path.write_text(value.value)
 
 
 def get_ref(ref):
@@ -25,7 +30,7 @@ def get_ref(ref):
   if value and value.startswith('ref:'):
     return get_ref(value.split(':', 1)[1].strip())
 
-  return value
+  return RefValue(symbolic=False, value=value)
 
 
 def iter_refs():
