@@ -7,6 +7,12 @@ from pathlib import Path
 from . import data
 
 
+def init():
+  data.init()
+  data.update_ref('HEAD', data.RefValue(
+      symbolic=True, value='refs/heads/master'))
+
+
 def write_tree(directory='.'):
   entries = []
   for entry in Path(directory).iterdir():
@@ -134,8 +140,8 @@ def get_commit(oid):
   return Commit(tree=tree, parent=parent, message=message)
 
 
-def iter_commit_and_parents(oids):
-  oids = deque(oids)
+def iter_commits_and_parents(oids):
+  oids = deque(set(oids))
   visited = set()
 
   while oids:

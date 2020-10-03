@@ -68,7 +68,7 @@ def parse_args():
 
 
 def init(args):
-  data.init()
+  base.init()
   print(f'Initialized empty ugit repository in {os.getcwd()}/{data.GIT_DIR}')
 
 
@@ -126,7 +126,7 @@ def k(args):
     if not ref.symbolic:
       oids.add(ref.value)
 
-  for oid in base.iter_commit_and_parents(oids):
+  for oid in base.iter_commits_and_parents(oids):
     commit = base.get_commit(oid)
     dot += f'"{oid}" [shape=box style=filled label="{oid[:10]}"]\n'
     if commit.parent:
